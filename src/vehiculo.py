@@ -1,20 +1,26 @@
-class Vehiculo:  # Define la clase Vehiculo
-    def __init__(self, patente: str, anio: int):  # Constructor que recibe patente y año al crear el objeto
-        self.__patente: str = patente  # Asigna la patente recibida a un atributo privado
+class Vehiculo:  # Define la clase base Vehiculo
+    def __init__(self, patente: str, anio: int):  # Constructor que recibe patente y año
+        self.patente: str = patente  # Asigna usando la property setter para ejecutar la validación
         self.__anio: int = anio  # Asigna el año recibido a un atributo privado
-        self.__en_taller: bool = False  # Inicializa el estado en False (no está en el taller por defecto) como privado
+        self.__en_taller: bool = False  # Inicializa el estado en False (no está en taller)
 
     @property
     def patente(self) -> str:  # Getter para acceder a la patente de forma segura
-        return self.__patente  # Retorna la patente del vehículo
+        return self.__patente  # Retorna la patente almacenada
+
+    @patente.setter
+    def patente(self, valor: str) -> None:  # Setter con validación de integridad
+        if not isinstance(valor, str) or len(valor) < 6 or " " in valor:  # Valida mínimo 6 caracteres y sin espacios
+            raise ValueError("La patente debe tener al menos 6 caracteres y no contener espacios.")  # Lanza error si no cumple
+        self.__patente = valor  # Asigna al atributo privado tras superar la validación
 
     @property
     def anio(self) -> int:  # Getter para acceder al año de fabricación
         return self.__anio  # Retorna el año del vehículo
 
     @property
-    def en_taller(self) -> bool:  # Getter para consultar si el vehículo está en el taller
-        return self.__en_taller  # Retorna True si está en el taller, False si no
+    def en_taller(self) -> bool:  # Getter de solo lectura para consultar si el vehículo está en el taller
+        return self.__en_taller  # Retorna True si está en el taller, False si no (sin setter para proteger estado)
 
     def ingresar(self) -> str:  # Método para registrar el ingreso del vehículo al taller
         if self.__en_taller:  # Verifica si el vehículo ya está marcado como dentro del taller
@@ -28,8 +34,8 @@ class Vehiculo:  # Define la clase Vehiculo
         self.__en_taller = False  # Cambia el estado a False (fuera del taller)
         return "El vehículo ha sido entregado."  # Devuelve mensaje de éxito
 
-    def tarifa_hora(self) -> int:  # Método que retorna el costo de la tarifa por hora
-        return 5000  # Retorna un valor fijo de 5000
+    def tarifa_hora(self) -> int:  # Método base que retorna el costo de la tarifa por hora
+        return 5000  # Retorna tarifa base de 5000
 
     def __str__(self) -> str:  # Representación textual del vehículo
         estado = "En Taller" if self.__en_taller else "Disponible / Fuera de Taller"  # Determina etiqueta de estado
