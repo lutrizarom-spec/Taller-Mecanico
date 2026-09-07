@@ -6,7 +6,7 @@ import unittest
 from src.vehiculo import Vehiculo
 from src.auto import Auto
 from src.moto import Moto
-from src.camion import Camion
+from src.camion import Camion, TipoCamion
 
 
 class TestVehiculo(unittest.TestCase):
@@ -14,18 +14,20 @@ class TestVehiculo(unittest.TestCase):
 
     def setUp(self) -> None:
         """Inicializa una instancia limpia de Vehiculo antes de cada prueba."""
-        self.vehiculo = Vehiculo(patente="ABC123", anio=2020)
+        self.vehiculo = Vehiculo(patente="AB1234", anio=2020)
 
     def test_inicializacion_valida(self) -> None:
         """Verifica la asignación correcta de atributos iniciales."""
-        self.assertEqual(self.vehiculo.patente, "ABC123")
+        self.assertEqual(self.vehiculo.patente, "AB1234")
         self.assertEqual(self.vehiculo.anio, 2020)
         self.assertFalse(self.vehiculo.en_taller)
 
     def test_setter_patente_valida(self) -> None:
-        """Verifica que se pueda actualizar la patente con un valor válido."""
-        self.vehiculo.patente = "XYZ789"
-        self.assertEqual(self.vehiculo.patente, "XYZ789")
+        """Verifica que se pueda actualizar la patente con un valor válido en ambos formatos chilenos."""
+        self.vehiculo.patente = "BBCC12"  # Formato nuevo: 4 letras y 2 números
+        self.assertEqual(self.vehiculo.patente, "BBCC12")
+        self.vehiculo.patente = "cd5678"  # Formato antiguo en minúscula normalizado
+        self.assertEqual(self.vehiculo.patente, "CD5678")
 
     def test_setter_patente_invalida_largo(self) -> None:
         """Verifica que patente con menos de 6 caracteres lance ValueError."""
@@ -36,6 +38,11 @@ class TestVehiculo(unittest.TestCase):
         """Verifica que patente con espacios lance ValueError."""
         with self.assertRaises(ValueError):
             self.vehiculo.patente = "AB 1234"
+
+    def test_setter_patente_invalida_formato(self) -> None:
+        """Verifica que combinaciones fuera de formato chileno lancen ValueError."""
+        with self.assertRaises(ValueError):
+            self.vehiculo.patente = "ABC123"  # 3 letras y 3 números inválido
 
     def test_en_taller_solo_lectura(self) -> None:
         """Verifica que en_taller no permita asignación directa."""
@@ -78,6 +85,23 @@ class TestVehiculo(unittest.TestCase):
         self.assertEqual(auto.tarifa_hora(), 25000)
         self.assertEqual(moto.tarifa_hora(), 15000)
         self.assertEqual(camion.tarifa_hora(), 40000)
+
+    def test_tarifas_tipo_camion(self) -> None:
+        """Verifica las tarifas según el tipo de camión y sus recargos."""
+        rampla = Camion(patente="RAMP12", anio=2020, capacidad_carga=5000, tipo=TipoCamion.RAMPLA_NORMAL)
+        doble = Camion(patente="DOBL34", anio=2021, capacidad_carga=8000, tipo=TipoCamion.DOBLE_RAMPLA)
+        explosivos = Camion(patente="EXPL56", anio=2022, capacidad_carga=3000, tipo=TipoCamion.TRANSPORTE_EXPLOSIVOS)
+
+        self.assertEqual(rampla.tarifa_hora(), 40000)
+        self.assertEqual(doble.tarifa_hora(), 50000)
+        self.assertEqual(explosivos.tarifa_hora(), 60000)
+
+    def test_validaciones_camion(self) -> None:
+        """Verifica validación de capacidad positiva y tipo válido en Camion."""
+        with self.assertRaises(ValueError):
+            Camion(patente="CAMI11", anio=2020, capacidad_carga=-100)
+        with self.assertRaises(ValueError):
+            Camion(patente="CAMI22", anio=2020, capacidad_carga=5000, tipo="TipoInexistente")
 
 
 if __name__ == "__main__":

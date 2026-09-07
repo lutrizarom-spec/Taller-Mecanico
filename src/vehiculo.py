@@ -1,3 +1,6 @@
+import re
+
+
 class Vehiculo:  # Define la clase base Vehiculo
     def __init__(self, patente: str, anio: int):  # Constructor que recibe patente y año
         self.patente: str = patente  # Asigna usando la property setter para ejecutar la validación
@@ -9,10 +12,11 @@ class Vehiculo:  # Define la clase base Vehiculo
         return self.__patente  # Retorna la patente almacenada
 
     @patente.setter
-    def patente(self, valor: str) -> None:  # Setter con validación de integridad
-        if not isinstance(valor, str) or len(valor) < 6 or " " in valor:  # Valida mínimo 6 caracteres y sin espacios
-            raise ValueError("La patente debe tener al menos 6 caracteres y no contener espacios.")  # Lanza error si no cumple
-        self.__patente = valor  # Asigna al atributo privado tras superar la validación
+    def patente(self, valor: str) -> None:  # Setter con validación de formato chileno
+        patron = r"^([A-Z]{2}\d{4}|[A-Z]{4}\d{2})$"
+        if not isinstance(valor, str) or " " in valor or not re.match(patron, valor.upper()):
+            raise ValueError("Patente inválida: Debe cumplir con formato chileno sin espacios (ej. 'AB1234' o 'ABCD12').")
+        self.__patente = valor.upper()  # Almacena en mayúsculas estandarizadas
 
     @property
     def anio(self) -> int:  # Getter para acceder al año de fabricación

@@ -35,9 +35,15 @@ taller_mecanico/
   - `entregar() -> str`: Controla la transición de estado a "Fuera de Taller", validando que esté previamente ingresado.
   - `tarifa_hora() -> int`: Retorna la base tarifaria por hora ($5.000).
 - **Properties:**
-  - `patente`, `anio`, `en_taller` con acceso de solo lectura para preservar la encapsulación.
+  - `patente`: Con validación de formato oficial chileno (`AA0000` o `AAAA00`).
+  - `anio`, `en_taller`: Con encapsulamiento y control de acceso.
 
-### 3.2 Extensibilidad Futura (Módulos Siguientes)
+### 3.2 Especialización y Polimorfismo
+- **`Auto`:** Tarifa horaria de $25.000.
+- **`Moto`:** Tarifa horaria de $15.000.
+- **`Camion`:** Incorpora `capacidad_carga` (>0) y `tipo` mediante `TipoCamion` (`RAMPLA_NORMAL`: $40.000, `DOBLE_RAMPLA`: $50.000, `TRANSPORTE_EXPLOSIVOS`: $60.000).
+
+### 3.3 Extensibilidad Futura (Módulos Siguientes)
 - **`Cliente` & `Mecanico` (Herencia de `Persona`):** Modelado de actores involucrados.
 - **`Servicio` & `Repuesto`:** Catálogo de operaciones técnicas y piezas.
 - **`OrdenTrabajo` / `Taller`:** Agregación que coordina vehículo, cliente, mecánico y cálculo financiero total.
