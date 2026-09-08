@@ -9,12 +9,23 @@ from src.moto import Moto
 from src.camion import Camion, TipoCamion
 
 
+class VehiculoConcreto(Vehiculo):
+    """Subclase concreta auxiliar para probar métodos heredados de la clase abstracta Vehiculo."""
+    def tarifa_hora(self) -> int:
+        return 5000
+
+
 class TestVehiculo(unittest.TestCase):
     """Casos de prueba para el ciclo de vida y operaciones de Vehiculo."""
 
     def setUp(self) -> None:
-        """Inicializa una instancia limpia de Vehiculo antes de cada prueba."""
-        self.vehiculo = Vehiculo(patente="AB1234", anio=2020)
+        """Inicializa una instancia limpia de subclase concreta antes de cada prueba."""
+        self.vehiculo = VehiculoConcreto(patente="AB1234", anio=2020)
+
+    def test_vehiculo_es_clase_abstracta(self) -> None:
+        """Verifica que Vehiculo no se pueda instanciar directamente por ser una clase abstracta."""
+        with self.assertRaises(TypeError):
+            Vehiculo(patente="AB1234", anio=2020)  # type: ignore
 
     def test_inicializacion_valida(self) -> None:
         """Verifica la asignación correcta de atributos iniciales."""
@@ -32,7 +43,7 @@ class TestVehiculo(unittest.TestCase):
     def test_setter_patente_invalida_largo(self) -> None:
         """Verifica que patente con menos de 6 caracteres lance ValueError."""
         with self.assertRaises(ValueError):
-            Vehiculo(patente="AB12", anio=2020)
+            Auto(patente="AB12", anio=2020)
 
     def test_setter_patente_invalida_espacios(self) -> None:
         """Verifica que patente con espacios lance ValueError."""

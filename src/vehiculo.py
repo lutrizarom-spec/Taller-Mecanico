@@ -1,7 +1,8 @@
+from abc import ABC, abstractmethod
 import re
 
 
-class Vehiculo:  # Define la clase base Vehiculo
+class Vehiculo(ABC):  # Define la clase base abstracta Vehiculo
     def __init__(self, patente: str, anio: int):  # Constructor que recibe patente y año
         self.patente: str = patente  # Asigna usando la property setter para ejecutar la validación
         self.__anio: int = anio  # Asigna el año recibido a un atributo privado
@@ -38,8 +39,10 @@ class Vehiculo:  # Define la clase base Vehiculo
         self.__en_taller = False  # Cambia el estado a False (fuera del taller)
         return "El vehículo ha sido entregado."  # Devuelve mensaje de éxito
 
-    def tarifa_hora(self) -> int:  # Método base que retorna el costo de la tarifa por hora
-        return 5000  # Retorna tarifa base de 5000
+    @abstractmethod
+    def tarifa_hora(self) -> int:  # Método abstracto que cada subclase concreta debe implementar
+        """Calcula y retorna la tarifa por hora específica de cada tipo de vehículo."""
+        pass
 
     def __str__(self) -> str:  # Representación textual del vehículo
         estado = "En Taller" if self.__en_taller else "Disponible / Fuera de Taller"  # Determina etiqueta de estado
