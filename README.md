@@ -46,3 +46,16 @@ Repositorio para la asignatura de Programación Orientada a Objetos Seguro.
   - **`vehiculo_dao.py` y `auto_dao.py`:** Implementación de herencia relacional (Table-per-type). `AutoDao` hereda de `VehiculoDao` e invoca `super().crear_tabla()`. La tabla `autos` usa su llave primaria también como llave foránea hacia `vehiculos`.
 - **Actualización de Script Principal (`main.py`):**
   - El código de prueba fue refactorizado y limpiado para enfocarse únicamente en inicializar los DAOs y crear (o validar la existencia de) las tablas correspondientes (`marcas`, `modelos`, `vehiculos`, `autos`).
+
+### 21 de Septiembre de 2026
+- **Implementación de método de Inserción (CRUD):**
+  - **`marca_dao.py`:** Se agregó el método `insertar()` para registrar nuevas marcas en la base de datos y recuperar el ID generado automáticamente mediante `lastrowid`.
+  - **`marca.py`:** Se actualizó el modelo para incluir el atributo `id` con sus respectivos métodos *getter* y *setter*.
+- **Actualización de Script Principal (`main.py`):**
+  - Se adaptó el código para probar específicamente la inserción de una `Marca`, demostrando cómo el `id` pasa de `None` a un número válido tras guardar en la base de datos.
+  - El código de creación de tablas original fue comentado para que sirva de referencia de estudio a los alumnos.
+
+### 22 de Septiembre de 2026
+- **Documentación Exhaustiva:** Se agregó un comentario explicativo en línea a absolutamente todas las sentencias y declaraciones de código en los paquetes `model` y `dao`, con el fin de facilitar el estudio y comprensión del funcionamiento interno por parte de los alumnos.
+- **Gestión de Ramas (Homologación):** Se fusionaron y homologaron los cambios de la rama de desarrollo hacia la rama principal (`master`).
+- **Publicación:** Publicación de la versión finalizada usando la cuenta autorizada (`michaelarjelm`).

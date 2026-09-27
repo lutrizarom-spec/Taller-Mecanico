@@ -1,18 +1,65 @@
-class Marca:  # Define la clase Marca para representar una marca en el dominio
-    def __init__(self, nombre: str, id: int = None):  # Constructor que recibe el nombre y opcionalmente el id
-        self.__id = id  # Inicializa el atributo privado id
-        self.__nombre = nombre  # Inicializa el atributo privado nombre
+# ==============================================================================
+# PILAR POO: ENCAPSULAMIENTO & ABSTRACCIÓN
+# ==============================================================================
+# Abstracción: Se modela la entidad 'Marca' del mundo real extrayendo solo sus
+# características esenciales (id y nombre) relevantes para el taller mecánico.
+#
+# Encapsulamiento: Los atributos se declaran privados mediante el prefijo '__'
+# (Name Mangling en Python), impidiendo acceso o modificación directa no controlada
+# desde el exterior. El acceso y modificación se regula mediante decoradores @property
+# (Getters) y @<atributo>.setter (Setters).
+# ==============================================================================
+
+class Marca:
+    """
+    Representa una marca de vehículos en el sistema (ej: Toyota, Ford, Chevrolet).
+    """
+
+    def __init__(self, nombre: str, id: int = None):
+        """
+        Constructor de la clase Marca.
+        :param nombre: Cadena con el nombre de la marca.
+        :param id: Entero opcional con el ID único asignado por la base de datos (None antes de persistir).
+        """
+        self.__id = id          # Atributo privado: Identificador único en BD
+        self.__nombre = nombre  # Atributo privado: Nombre descriptivo de la marca
+
+    # --------------------------------------------------------------------------
+    # GETTERS Y SETTERS (Control de Acceso Encapsulado)
+    # --------------------------------------------------------------------------
 
     @property
-    def id(self) -> int:  # Getter para acceder al atributo privado id
-        return self.__id  # Retorna el id de la marca
+    def id(self) -> int:
+        """Getter: Permite consultar el ID de la marca sin exponer el atributo privado directamente."""
+        return self.__id
+
+    @id.setter
+    def id(self, valor: int) -> None:
+        """Setter: Permite asignar o actualizar el ID una vez generado por la BD."""
+        if valor is not None and valor <= 0:
+            raise ValueError("El ID de la marca debe ser un número entero positivo.")
+        self.__id = valor
 
     @property
-    def nombre(self) -> str:  # Getter para acceder al atributo privado nombre
-        return self.__nombre  # Retorna el nombre de la marca
+    def nombre(self) -> str:
+        """Getter: Permite consultar el nombre de la marca."""
+        return self.__nombre
 
-    def __repr__(self) -> str:  # Define la representación oficial en cadena del objeto
-        return f"Marca(id={self.__id}, nombre='{self.__nombre}')"  # Retorna formato descriptivo del objeto
+    @nombre.setter
+    def nombre(self, valor: str) -> None:
+        """Setter: Permite modificar el nombre aplicando validación de datos."""
+        if not valor or not valor.strip():
+            raise ValueError("El nombre de la marca no puede estar vacío.")
+        self.__nombre = valor.strip()
 
-    def __str__(self) -> str:  # Define la representación en texto legible del objeto
-        return f"Marca(id={self.__id}, nombre='{self.__nombre}')"  # Retorna formato descriptivo del objeto
+    # --------------------------------------------------------------------------
+    # POLIMORFISMO: SOBRESCRITURA DE MÉTODOS MÁGICOS DE OBJECT
+    # --------------------------------------------------------------------------
+
+    def __repr__(self) -> str:
+        """Representación técnica del objeto (ideal para debugging y logs)."""
+        return f"Marca(id={self.__id}, nombre='{self.__nombre}')"
+
+    def __str__(self) -> str:
+        """Representación legible para el usuario final."""
+        return f"Marca #{self.__id or 'Sin ID'}: {self.__nombre}"

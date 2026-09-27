@@ -1,81 +1,80 @@
-from dao.dao import Dao  # Importa la clase base Dao desde el módulo dao.dao
-from model.marca import Marca  # Importa la clase Marca desde el módulo model.marca
+from dao.dao import Dao
+from model.marca import Marca
 
-class MarcaDao(Dao):  # Define la clase MarcaDao que hereda de Dao
+# ==============================================================================
+# PATRÓN DE DISEÑO: DATA ACCESS OBJECT (DAO) & HERENCIA
+# ==============================================================================
+# Patrón DAO: Desacopla la lógica de negocio de la persistencia de datos.
+# El resto del sistema interactúa con objetos 'Marca' y le delega a 'MarcaDao'
+# la ejecución de sentencias SQL (INSERT, SELECT, CREATE TABLE, etc.).
+#
+# Herencia: MarcaDao hereda de la clase base 'Dao', reutilizando la conexión a SQLite
+# y el cursor sin tener que reabrir conexiones manualmente en cada método.
+# ==============================================================================
+
+class MarcaDao(Dao):
     """
     Data Access Object para la entidad Marca.
     Hereda de la clase base Dao para utilizar la conexión y el cursor.
     """
-    
-    def crear_tabla(self):  # Define el método para crear la tabla correspondiente
+
+    def crear_tabla(self) -> None:
         """
         Crea la tabla 'marcas' en la base de datos si no existe.
-        La tabla contiene:
+        Estructura:
         - id: INTEGER PRIMARY KEY AUTOINCREMENT
         - nombre: TEXT NOT NULL
         """
         sql = """
-        CREATE TABLE IF NOT EXISTS marcas(
+        CREATE TABLE IF NOT EXISTS marcas (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre TEXT NOT NULL
         )
         """
-        self.cursor.execute(sql)  # Ejecuta la consulta SQL utilizando el cursor heredado
-        self.conexion.commit()  # Confirma (guarda) los cambios en la base de datos utilizando la conexión heredada
+        self.cursor.execute(sql)
+        self.conexion.commit()
 
-    def get_all(self):  # Define el método para obtener todas las marcas
+    def insertar(self, marca: Marca) -> None:
+        """
+        Inserta un nuevo objeto Marca en la base de datos y le asigna
+        su ID auto-generado.
+
+        :param marca: Instancia del modelo Marca a persistir.
+        """
+        sql = "INSERT INTO marcas (nombre) VALUES (?)"
+        self.cursor.execute(sql, (marca.nombre,))
+        self.conexion.commit()
+
+        # Recupera la última llave primaria auto-incremental generada por SQLite
+        marca.id = self.cursor.lastrowid
+
+    def get_all(self) -> list[Marca]:
         """
         Obtiene todas las marcas registradas en la base de datos.
+
+        :return: Lista de objetos Marca hidratados con datos de la BD.
+        """
+        sql = "SELECT id, nombre FROM marcas"
+        self.cursor.execute(sql)
+        filas = self.cursor.fetchall()
         
-        Returns:
-            list[Marca]: Lista de objetos Marca con sus respectivos datos.
-        """
-        sql = "SELECT id, nombre FROM marcas"  # Sentencia SQL para consultar todos los registros de marcas
-        self.cursor.execute(sql)  # Ejecuta la consulta a través del cursor heredado
-        filas = self.cursor.fetchall()  # Recupera todas las filas resultantes de la consulta
-        marcas = []  # Inicializa una lista vacía para almacenar los objetos Marca
-        for fila in filas:  # Itera sobre cada registro (fila) obtenido
-            marca = Marca(nombre=fila[1], id=fila[0])  # Instancia un objeto Marca con nombre e id
-            marcas.append(marca)  # Agrega la instancia a la lista de marcas
-        return marcas  # Retorna la lista con todos los objetos Marca
+        marcas = []
+        for fila in filas:
+            marca = Marca(id=fila[0], nombre=fila[1])
+            marcas.append(marca)
+        return marcas
 
-    def get_all_marcas(self):  # Método alternativo / alias explícito para obtener todas las marcas
+    def get_by_id(self, id: int) -> Marca | None:
         """
-        Alias del método get_all para obtener todas las marcas.
-        """
-        return self.get_all()  # Invoca y retorna el resultado de get_all()
+        Busca una marca por su identificador único (ID).
 
-    def get_by_id(self, id_marca: int):  # Define el método para obtener una marca según su ID
+        :param id: Identificador único de la marca.
+        :return: Objeto Marca si existe, o None si no se encuentra.
         """
-        Busca y obtiene una marca por su ID.
+        sql = "SELECT id, nombre FROM marcas WHERE id = ?"
+        self.cursor.execute(sql, (id,))
+        fila = self.cursor.fetchone()
         
-        Args:
-            id_marca (int): El identificador único de la marca en la base de datos.
-            
-        Returns:
-            Marca | None: Objeto Marca si se encuentra, o None si no existe.
-        """
-        sql = "SELECT id, nombre FROM marcas WHERE id = ?"  # Sentencia SQL parametrizada para buscar por id
-        self.cursor.execute(sql, (id_marca,))  # Ejecuta la consulta pasando el id de manera segura
-        fila = self.cursor.fetchone()  # Recupera el primer registro que coincida con el criterio
-        if fila:  # Verifica si se encontró una fila coincidente
-            return Marca(nombre=fila[1], id=fila[0])  # Retorna el objeto Marca con los datos recuperados
-        return None  # Retorna None si no se encontró ningún registro
-
-    def get_marca_by_id(self, id_marca: int):  # Método alternativo / alias explícito para buscar marca por ID
-        """
-        Alias del método get_by_id para obtener una marca por su ID.
-        """
-        return self.get_by_id(id_marca)  # Invoca y retorna el resultado de get_by_id()
-
-    def obtener_todas(self):  # Alias en español para obtener todas las marcas
-        """
-        Alias en español que invoca a get_all.
-        """
-        return self.get_all()  # Invoca y retorna el resultado de get_all()
-
-    def obtener_por_id(self, id_marca: int):  # Alias en español para obtener una marca por su ID
-        """
-        Alias en español que invoca a get_by_id.
-        """
-        return self.get_by_id(id_marca)  # Invoca y retorna el resultado de get_by_id()
+        if fila is not None:
+            return Marca(id=fila[0], nombre=fila[1])
+        return None
