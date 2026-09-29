@@ -1,62 +1,34 @@
-"""
-SISTEMA DE GESTIÓN DE TALLER MECÁNICO
-Script Principal (main.py): Validación de Encapsulamiento (@property) y Polimorfismo.
-"""
+﻿# Importa los modelos del dominio para crear instancias de prueba
+from model.cliente import Cliente  # Importa la entidad Cliente
+from model.auto import Auto  # Importa la entidad Auto
+from model.camion import Camion  # Importa la entidad Camion
+from model.moto import Moto  # Importa la entidad Moto
 
-import sys  # Importa sys para configuración de codificación de salida
-from src.vehiculo import Vehiculo  # Importa la clase Vehiculo base
-from src.auto import Auto  # Importa la clase Auto
-from src.moto import Moto  # Importa la clase Moto
-from src.camion import Camion, TipoCamion  # Importa la clase Camion y el enum TipoCamion
-
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8")  # Garantiza compatibilidad UTF-8 en consola Windows
+# Importa las clases DAO para simular operaciones de persistencia
+from dao.cliente_dao import ClienteDAO  # Importa ClienteDAO
 
 
-def ejecutar_simulacion() -> None:  # Función principal que orquesta la simulación
-    print("=" * 65)
-    print("   🚗 VALIDACIÓN DE ENCAPSULAMIENTO Y POLIMORFISMO 🔧")
-    print("=" * 65)
+def main():  # Función principal de ejecución del programa
+    print("=== SISTEMA TALLER MECÁNICO (DEMO POO + DAO) ===")  # Muestra encabezado en consola
 
-    # 1. Prueba de Polimorfismo en Tarifas
-    print("\n[PASO 1] 🔄 Lista Polimórfica y Tarifas:")
-    vehiculos = [
-        Auto(patente="AUTO12", anio=2021),
-        Moto(patente="MOTO34", anio=2022),
-        Camion(patente="CAMI56", anio=2019, capacidad_carga=5000)
-    ]
-    for v in vehiculos:
-        print(f"  * {type(v).__name__} ({v.patente}) -> Tarifa: ${v.tarifa_hora():,}")
+    # 1. INSTANCIACIÓN DE OBJETOS DE DOMINIO (Demostración de POO)
+    cliente_demo = Cliente("11111111-1", "Carlos", "Pérez", "+56912345678", "carlos@gmail.com", "Av. Principal 123")  # Instancia un Cliente
+    auto_demo = Auto("AB123CD", "Toyota", "Corolla", 2022, num_puertas=4)  # Instancia un Auto
+    camion_demo = Camion("XY987ZT", "Volvo", "FH16", 2020, capacidad_ton=18.0)  # Instancia un Camión
+    moto_demo = Moto("JK456LM", "Yamaha", "YZF-R3", 2023, cilindrada=321)  # Instancia una Moto
 
-    # 2. Prueba de Validación de Setter (@property patente)
-    print("\n[PASO 2] 🛡️ Validación de Patente Inválida (espera ValueError):")
-    try:
-        Vehiculo(patente="AB 12", anio=2020)  # Con espacio y menos de 6 caracteres
-    except ValueError as e:
-        print(f"  * ✅ Capturado ValueError con éxito: {e}")
+    # 2. DEMOSTRACIÓN DE POLIMORFISMO
+    vehiculos = [auto_demo, camion_demo, moto_demo]  # Almacena distintos subtipos en una sola lista
+    print("\n--- Demostración de Polimorfismo (Tarifas Diferenciadas) ---")  # Separador visual
+    for v in vehiculos:  # Recorre cada vehículo invocando el mismo método .tarifa_hora()
+        print(f"Vehículo {v.patente} ({v.__class__.__name__}): ${v.tarifa_hora()}/hora")  # Muestra tarifa específica según el tipo
 
-    # 3. Prueba de Inmutabilidad de Estado (@property en_taller de solo lectura)
-    print("\n[PASO 3] 🔒 Bloqueo de Escritura Directa en 'en_taller' (espera AttributeError):")
-    auto_prueba = Auto(patente="PRUE01", anio=2023)
-    try:
-        auto_prueba.en_taller = True  # Intento de modificación directa sin usar ingresar()
-    except AttributeError as e:
-        print(f"  * ✅ Capturado AttributeError con éxito: {e}")
+    # 3. VERIFICACIÓN DE OBJETOS PREPARADOS PARA PERSISTENCIA
+    print("\n--- Demostración de Capa POO + DAO ---")  # Separador visual
+    print(f"Cliente instanciado en memoria: {cliente_demo.nombre_completo()} (RUT: {cliente_demo.rut})")  # Muestra datos del cliente
 
-    # 4. Demostración de Tipos de Camión y Recargos
-    print("\n[PASO 4] 🚛 Tipos de Camión y Recargos Tarifarios:")
-    camiones = [
-        Camion(patente="RAMP01", anio=2021, capacidad_carga=8000, tipo=TipoCamion.RAMPLA_NORMAL),
-        Camion(patente="DOBL02", anio=2022, capacidad_carga=12000, tipo=TipoCamion.DOBLE_RAMPLA),
-        Camion(patente="EXPL03", anio=2023, capacidad_carga=5000, tipo=TipoCamion.TRANSPORTE_EXPLOSIVOS),
-    ]
-    for c in camiones:
-        print(f"  * {c.tipo.value} ({c.patente}, {c.capacidad_carga} kg) -> Tarifa: ${c.tarifa_hora():,}")
-
-    print("\n" + "=" * 65)
-    print("           ✅ SIMULACIÓN Y VALIDACIONES COMPLETADAS")
-    print("=" * 65)
+    print("\n=== EJECUCIÓN CONCLUIDA CON ÉXITO ===")  # Mensaje final de confirmación
 
 
-if __name__ == "__main__":
-    ejecutar_simulacion()
+if __name__ == "__main__":  # Bloque estándar de ejecución directa en Python
+    main()  # Llama a la función principal
