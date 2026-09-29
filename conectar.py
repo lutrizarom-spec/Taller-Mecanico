@@ -1,10 +1,10 @@
-﻿import sqlite3  # Importa el módulo nativo sqlite3 para gestionar la base de datos
+﻿import sqlite3  # Importa la librería oficial de SQLite en Python
 
-DB_NAME = "taller.db"  # Nombre del archivo de la base de datos SQLite
+DB_NAME = "taller.db"  # Nombre del archivo SQLite que actúa como almacenamiento relacional
 
 
-def obtener_conexion():  # Función que crea y entrega una conexión configurada
-    conexion = sqlite3.connect(DB_NAME)  # Abre la conexión con la BD (se crea si no existe)
-    conexion.row_factory = sqlite3.Row  # Permite acceder a las columnas por nombre (ej: fila["nombre"])
-    conexion.execute("PRAGMA foreign_keys = ON;")  # Activa la verificación estricta de claves foráneas
-    return conexion  # Retorna el objeto de conexión listo para usarse
+def obtener_conexion():  # Función centralizada para entregar conexiones configuradas
+    conexion = sqlite3.connect(DB_NAME)  # Abre la conexión con la base de datos local
+    conexion.row_factory = sqlite3.Row  # Configura la devolución de consultas como diccionarios mapeados
+    conexion.execute("PRAGMA foreign_keys = ON;")  # Fuerza la verificación estricta de restricciones relacionales
+    return conexion  # Retorna el objeto conexión listo para trabajar con bloques 'with'
