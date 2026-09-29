@@ -1,11 +1,11 @@
-﻿class Persona:  # Clase base para representar entidades con datos personales
+﻿class Persona:  # Define la superclase abstracta/base para representar a cualquier persona en el sistema
 
     def __init__(self, rut: str, nombre: str, apellido: str, telefono: str = "", email: str = ""):
-        self.rut = rut  # Identificador único de la persona (RUT)
+        self.rut = rut  # Identificador único oficial (Clave primaria conceptual)
         self.nombre = nombre  # Primer nombre de la persona
-        self.apellido = apellido  # Apellido de la persona
-        self.telefono = telefono  # Número telefónico de contacto
-        self.email = email  # Correo electrónico de contacto
+        self.apellido = apellido  # Apellidos paterno y materno
+        self.telefono = telefono  # Teléfono de contacto (Opcional, por defecto cadena vacía)
+        self.email = email  # Correo electrónico institucional o personal (Opcional)
 
-    def nombre_completo(self) -> str:  # Método auxiliar para obtener el nombre completo
-        return f"{self.nombre} {self.apellido}"  # Concatena nombre y apellido
+    def nombre_completo(self) -> str:  # Método helper para obtener el nombre formateado
+        return f"{self.nombre} {self.apellido}"  # Retorna el nombre y apellido concatenados con espacio

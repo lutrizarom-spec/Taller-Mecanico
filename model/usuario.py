@@ -1,10 +1,10 @@
-﻿from model.persona import Persona  # Importa la clase padre Persona desde el paquete model
+﻿from model.persona import Persona  # Importa la superclase Persona
 
 
-class Usuario(Persona):  # Clase Usuario que hereda atributos y métodos de Persona
+class Usuario(Persona):  # Declara Usuario extendiendo las capacidades de Persona
 
-    def __init__(self, rut: str, nombre: str, apellido: str, telefono: str = "", email: str = "", username: str = "", clave: str = "", rol: str = "operador"):
-        super().__init__(rut, nombre, apellido, telefono, email)  # Llama al constructor de la clase base
-        self.username = username  # Nombre de usuario para iniciar sesión
-        self.clave = clave  # Contraseña de acceso al sistema
-        self.rol = rol  # Perfil o nivel de permisos (ej: admin, operador)
+    def __init__(self, rut: str, nombre: str, apellido: str, telefono: str = "", email: str = "", username: str = "", clave: str = "", id_rol: int = 1):
+        super().__init__(rut, nombre, apellido, telefono, email)  # Hereda datos básicos de identidad
+        self.username = username  # Nombre de cuenta para autenticación en el sistema
+        self.clave = clave  # Contraseña de acceso (almacenada/encriptada)
+        self.id_rol = id_rol  # Clave foránea que vincula este usuario con un Rol específico
